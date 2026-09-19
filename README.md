@@ -284,8 +284,8 @@ FinMate detects that the category is unspecified. Instead of guessing, the assis
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/finmate.git
-cd finmate
+git clone https://github.com/NhatMinh300306/Finance-AI-Assistant.git
+cd Finance-AI-Assistant
 
 # 2. Create and activate a virtual environment
 python3 -m venv venv
