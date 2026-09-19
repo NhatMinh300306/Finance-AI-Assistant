@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FinMate — AI-powered personal finance management assistant. Track expenses, analyze spending, and get smart financial insights.">
+  <title>FinMate — AI Personal Finance Assistant</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- ====== Sidebar ====== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon">💰</div>
+          <div>
+            <h1>FinMate</h1>
+            <span>AI Finance Assistant</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Menu</div>
+          <button class="nav-item active" data-page="dashboard" id="nav-dashboard">
+            <span class="nav-icon">📊</span> Dashboard
+          </button>
+          <button class="nav-item" data-page="transactions" id="nav-transactions">
+            <span class="nav-icon">💳</span> Transactions
+          </button>
+          <button class="nav-item" data-page="analytics" id="nav-analytics">
+            <span class="nav-icon">📈</span> Analytics
+          </button>
+          <button class="nav-item" data-page="chat" id="nav-chat">
+            <span class="nav-icon">🤖</span> AI Assistant
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Settings</div>
+          <button class="nav-item" data-page="settings" id="nav-settings">
+            <span class="nav-icon">⚙️</span> Settings
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar">DU</div>
+          <div class="user-info">
+            <div class="user-name">Demo User</div>
+            <div class="user-email">demo@finmate.app</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====== Main Content ====== -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="content-header">
+        <div class="header-left">
+          <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+          <h2 class="page-title" id="page-title">Dashboard</h2>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-sm" id="btn-add-transaction" title="Add Transaction">
+            ＋ Add Transaction
+          </button>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content-body">
+
+        <!-- ===== Dashboard Page ===== -->
+        <section class="page-section active" id="page-dashboard">
+          <!-- Summary Cards -->
+          <div class="summary-grid" id="summary-grid">
+            <div class="summary-card">
+              <div class="card-icon balance">💰</div>
+              <div class="card-label">Total Balance</div>
+              <div class="card-value" id="card-balance">¥0.00</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon income">📈</div>
+              <div class="card-label">Total Income</div>
+              <div class="card-value positive" id="card-income">¥0.00</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon expense">📉</div>
+              <div class="card-label">Total Expenses</div>
+              <div class="card-value negative" id="card-expense">¥0.00</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon savings">🏦</div>
+              <div class="card-label">This Month Savings</div>
+              <div class="card-value" id="card-savings">¥0.00</div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-grid">
+            <div class="chart-container">
+              <div class="card-header">
+                <span class="card-title">Expenses by Category</span>
+              </div>
+              <canvas id="chart-categories"></canvas>
+            </div>
+            <div class="chart-container">
+              <div class="card-header">
+                <span class="card-title">Income vs Expenses</span>
+              </div>
+              <canvas id="chart-income-expense"></canvas>
+            </div>
+            <div class="chart-container full-width">
+              <div class="card-header">
+                <span class="card-title">Spending Over Time (Last 30 Days)</span>
+              </div>
+              <canvas id="chart-spending-trend"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent Transactions -->
+          <div class="transactions-section">
+            <div class="section-header">
+              <h3 class="section-title">Recent Transactions</h3>
+              <button class="btn btn-secondary btn-sm" data-page="transactions" onclick="navigateTo('transactions')">
+                View All →
+              </button>
+            </div>
+            <div id="recent-transactions-body">
+              <div class="loading-state"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Transactions Page ===== -->
+        <section class="page-section" id="page-transactions">
+          <div class="transactions-section">
+            <div class="section-header">
+              <h3 class="section-title">All Transactions</h3>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <select class="form-select" id="filter-category" style="width:160px;">
+                  <option value="">All Categories</option>
+                  <option value="Food">Food</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Bills">Bills</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Education">Education</option>
+                  <option value="Salary">Salary</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Housing">Housing</option>
+                  <option value="Other">Other</option>
+                </select>
+                <select class="form-select" id="filter-type" style="width:140px;">
+                  <option value="">All Types</option>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+            </div>
+            <div id="all-transactions-body">
+              <div class="loading-state"><div class="spinner"></div></div>
+            </div>
+            <div id="transactions-pagination" style="display:flex;justify-content:center;gap:10px;margin-top:16px;"></div>
+          </div>
+        </section>
+
+        <!-- ===== Analytics Page ===== -->
+        <section class="page-section" id="page-analytics">
+          <div class="summary-grid" id="analytics-summary-grid">
+            <div class="summary-card">
+              <div class="card-icon balance">📊</div>
+              <div class="card-label">Total Transactions</div>
+              <div class="card-value" id="analytics-txn-count">0</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon expense">🔝</div>
+              <div class="card-label">Top Expense Category</div>
+              <div class="card-value" id="analytics-top-category" style="font-size:1.1rem;">—</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon income">💵</div>
+              <div class="card-label">Avg Monthly Income</div>
+              <div class="card-value positive" id="analytics-avg-income">¥0</div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon savings">📉</div>
+              <div class="card-label">Avg Monthly Expense</div>
+              <div class="card-value negative" id="analytics-avg-expense">¥0</div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-container">
+              <div class="card-header">
+                <span class="card-title">Category Breakdown</span>
+              </div>
+              <canvas id="analytics-chart-categories"></canvas>
+            </div>
+            <div class="chart-container">
+              <div class="card-header">
+                <span class="card-title">Monthly Trend</span>
+              </div>
+              <canvas id="analytics-chart-monthly"></canvas>
+            </div>
+          </div>
+
+          <!-- Spending Alerts -->
+          <div class="transactions-section" id="spending-alerts-section">
+            <div class="section-header">
+              <h3 class="section-title">⚠️ Spending Alerts</h3>
+            </div>
+            <div id="spending-alerts-body">
+              <div class="empty-state">
+                <div class="empty-icon">✅</div>
+                <p>No unusual spending detected. Great job!</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Chat Page ===== -->
+        <section class="page-section" id="page-chat">
+          <div class="chat-section">
+            <div class="chat-messages" id="chat-messages">
+              <!-- Welcome message -->
+              <div class="chat-welcome" id="chat-welcome">
+                <div class="welcome-icon">🤖</div>
+                <h2>Welcome to FinMate AI</h2>
+                <p>I'm your personal finance assistant. Ask me anything about your finances!</p>
+                <div class="suggested-prompts">
+                  <button class="suggested-prompt" onclick="sendSuggestedPrompt(this)">💰 How much did I spend this month?</button>
+                  <button class="suggested-prompt" onclick="sendSuggestedPrompt(this)">📊 Where does most of my money go?</button>
+                  <button class="suggested-prompt" onclick="sendSuggestedPrompt(this)">📋 Give me a monthly summary</button>
+                  <button class="suggested-prompt" onclick="sendSuggestedPrompt(this)">💡 Help me reduce my expenses</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-input-area">
+              <div class="chat-input-wrapper">
+                <textarea
+                  class="chat-input"
+                  id="chat-input"
+                  placeholder="Ask anything about your finances..."
+                  rows="1"
+                ></textarea>
+                <button class="chat-send-btn" id="chat-send-btn" title="Send message">
+                  ➤
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Settings Page ===== -->
+        <section class="page-section" id="page-settings">
+          <div class="card" style="max-width:600px;">
+            <h3 class="section-title" style="margin-bottom:20px;">Settings</h3>
+            <div class="form-group">
+              <label class="form-label">User Name</label>
+              <input class="form-input" type="text" value="Demo User" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" type="email" value="demo@finmate.app" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">AI Model</label>
+              <input class="form-input" type="text" value="Gemini 2.0 Flash" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Currency</label>
+              <input class="form-input" type="text" value="CNY (¥)" disabled>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 20px;">
+              ℹ️ Settings are read-only in this prototype. Authentication and user preferences will be available in a future release.
+            </p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ====== Add/Edit Transaction Modal ====== -->
+  <div class="modal-overlay" id="transaction-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add Transaction</h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <form id="transaction-form">
+        <input type="hidden" id="form-txn-id">
+        <div class="form-group">
+          <label class="form-label" for="form-amount">Amount (¥)</label>
+          <input class="form-input" type="number" id="form-amount" min="0.01" step="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-type">Type</label>
+          <select class="form-select" id="form-type" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-category">Category</label>
+          <select class="form-select" id="form-category" required>
+            <option value="Food">Food</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Bills">Bills</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Education">Education</option>
+            <option value="Salary">Salary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Investment">Investment</option>
+            <option value="Gift">Gift</option>
+            <option value="Housing">Housing</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-description">Description</label>
+          <input class="form-input" type="text" id="form-description" placeholder="e.g., Lunch at restaurant" maxlength="500">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="form-date">Date</label>
+          <input class="form-input" type="date" id="form-date">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="modal-submit">Add Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== Toast Container ====== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

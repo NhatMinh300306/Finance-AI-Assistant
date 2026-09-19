@@ -1,0 +1,27 @@
+/* ===================================================================
+   FinMate — Dashboard Specific Styles
+   Complements the main design system in style.css
+   =================================================================== */
+
+@import url("style.css");
+
+/* Dashboard Grid Enhancements */
+.dashboard-metrics-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-primary-hover);
+}
